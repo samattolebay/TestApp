@@ -13,9 +13,9 @@ class AppRepository(
 
     fun getAllRecords() = dao.getAll().asLiveData()
 
-    suspend fun getRecordsByParentId(parentId: Int): List<Record> {
+    suspend fun getRecordsByParentId(parentId: Int, size: Int): List<Record> {
         return withContext(ioDispatcher) {
-            dao.getRecordsByParentId(parentId)
+            dao.getRecordsByParentId(parentId, size)
         }
     }
 }

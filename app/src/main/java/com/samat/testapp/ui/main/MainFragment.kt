@@ -8,14 +8,19 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.samat.testapp.MyApp
 import com.samat.testapp.R
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels {
-        MainViewModel.provideFactory((context?.applicationContext as MyApp).repository)
+        MainViewModel.provideFactory(
+            (context?.applicationContext as MyApp).repository, arguments?.getInt(KEY_PARENT_ID) ?: 0
+        )
     }
 
     override fun onCreateView(
@@ -27,8 +32,6 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val parentId = requireArguments().getInt(KEY_PARENT_ID)
-        viewModel.getRecordsByParentId(parentId)
         val list = view.findViewById<RecyclerView>(R.id.list)
         val adapter = RecordAdapter {
             parentFragmentManager.commit {
@@ -37,8 +40,8 @@ class MainFragment : Fragment() {
             }
         }
         list.adapter = adapter
-        viewModel.records.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        lifecycleScope.launch {
+            viewModel.records.collectLatest { source -> adapter.submitData(source) }
         }
     }
 

@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samat.testapp.R
 import com.samat.testapp.data.model.Record
 
 class RecordAdapter(private val onItemClick: (Int) -> Unit) :
-    ListAdapter<Record, RecordAdapter.ViewHolder>(DiffUtilCallback()) {
+    PagingDataAdapter<Record, RecordAdapter.ViewHolder>(DiffUtilCallback()) {
 
     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val id = view.findViewById<TextView>(R.id.item_id)
@@ -32,7 +32,7 @@ class RecordAdapter(private val onItemClick: (Int) -> Unit) :
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), onItemClick)
+        getItem(position)?.let { holder.bind(it, onItemClick) }
     }
 }
 

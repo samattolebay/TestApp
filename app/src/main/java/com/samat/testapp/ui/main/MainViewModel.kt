@@ -1,27 +1,28 @@
 package com.samat.testapp.ui.main
 
 import androidx.lifecycle.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.samat.testapp.data.AppRepository
-import com.samat.testapp.data.model.Record
-import kotlinx.coroutines.launch
+import com.samat.testapp.data.paging.RecordPagingSource
 
-class MainViewModel(private val repository: AppRepository) : ViewModel() {
+class MainViewModel(private val repository: AppRepository, parentId: Int) : ViewModel() {
 
-    private val _records = MutableLiveData<List<Record>>()
-    val records: LiveData<List<Record>>
-        get() = _records
-
-    fun getRecordsByParentId(parentId: Int) {
-        viewModelScope.launch {
-            val result = repository.getRecordsByParentId(parentId)
-            _records.value = result
-        }
+    val records = Pager(PagingConfig(PAGE_SIZE)) {
+        RecordPagingSource(repository, parentId)
     }
-
+        .flow
+        .cachedIn(viewModelScope)
 
     // Define ViewModel factory in a companion object
     companion object {
-        fun provideFactory(repository: AppRepository): AbstractSavedStateViewModelFactory =
+        private const val PAGE_SIZE = 20
+
+        fun provideFactory(
+            repository: AppRepository,
+            parentId: Int
+        ): AbstractSavedStateViewModelFactory =
             object : AbstractSavedStateViewModelFactory() {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(
@@ -29,7 +30,7 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return MainViewModel(repository) as T
+                    return MainViewModel(repository, parentId) as T
                 }
             }
     }
