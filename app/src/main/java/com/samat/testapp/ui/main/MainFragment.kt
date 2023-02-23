@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.samat.testapp.MyApp
 import com.samat.testapp.R
 
 class MainFragment : Fragment() {
@@ -14,12 +15,8 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModel.provideFactory((context?.applicationContext as MyApp).repository)
     }
 
     override fun onCreateView(
@@ -31,5 +28,8 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.records.observe(viewLifecycleOwner) {
+            println(it.size)
+        }
     }
 }
