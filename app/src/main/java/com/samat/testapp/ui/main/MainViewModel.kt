@@ -1,13 +1,22 @@
 package com.samat.testapp.ui.main
 
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.samat.testapp.data.AppRepository
+import com.samat.testapp.data.model.Record
+import kotlinx.coroutines.launch
 
-class MainViewModel(repository: AppRepository) : ViewModel() {
+class MainViewModel(private val repository: AppRepository) : ViewModel() {
 
-    val records = repository.getAllRecords()
+    private val _records = MutableLiveData<List<Record>>()
+    val records: LiveData<List<Record>>
+        get() = _records
+
+    fun getRecordsByParentId(parentId: Int) {
+        viewModelScope.launch {
+            val result = repository.getRecordsByParentId(parentId)
+            _records.value = result
+        }
+    }
 
 
     // Define ViewModel factory in a companion object

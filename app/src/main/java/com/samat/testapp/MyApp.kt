@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.samat.testapp.data.AppRepository
 import com.samat.testapp.data.db.AppDatabase
+import kotlinx.coroutines.Dispatchers
 
 class MyApp : Application() {
 
@@ -13,7 +14,8 @@ class MyApp : Application() {
         super.onCreate()
         val db = Room.databaseBuilder(this, AppDatabase::class.java, "record-db")
             .createFromAsset("database/test_db.sqlite").build()
+        val ioDispatcher = Dispatchers.IO
 
-        repository = AppRepository(db.recordDao())
+        repository = AppRepository(ioDispatcher, db.recordDao())
     }
 }

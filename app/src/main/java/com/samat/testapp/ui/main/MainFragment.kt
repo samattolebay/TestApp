@@ -27,11 +27,12 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val id = requireArguments().getInt(KEY_ID)
+        val parentId = requireArguments().getInt(KEY_PARENT_ID)
+        viewModel.getRecordsByParentId(parentId)
         val list = view.findViewById<RecyclerView>(R.id.list)
         val adapter = RecordAdapter {
             parentFragmentManager.commit {
-                replace(R.id.container, MainFragment::class.java, bundleOf(KEY_ID to it))
+                replace(R.id.container, MainFragment::class.java, bundleOf(KEY_PARENT_ID to it))
                 addToBackStack(null)
             }
         }
@@ -42,6 +43,6 @@ class MainFragment : Fragment() {
     }
 
     companion object {
-        const val KEY_ID = "id"
+        const val KEY_PARENT_ID = "id"
     }
 }
