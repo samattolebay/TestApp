@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'com.samat.testapp'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.samat.testapp"
         minSdk 23
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
